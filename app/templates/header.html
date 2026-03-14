@@ -7,18 +7,27 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link active" href="{{ url_for('home') }}">Home <span class="visually-hidden">(current)</span></a>
+          <a class="nav-link {% if request.endpoint == 'home' %}active{% endif %}" href="{{ url_for('home') }}">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('about') }}">About</a>
+          <a class="nav-link {% if request.endpoint == 'about' %}active{% endif %}" href="{{ url_for('about') }}">About</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('upload') }}">File Upload</a>
+            <a class="nav-link {% if request.endpoint == 'upload' %}active{% endif %}" href="{{ url_for('upload') }}">File Upload</a>
         </li>
       </ul>
       <ul class="navbar-nav">
+        {% if current_user.is_authenticated %}
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'login' %}active{% endif %}" href="{{ url_for('login') }}">Login</a>
+          </li>
+        {% endif %}
         <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+            <a class="nav-link {% if request.endpoint == 'files' %}active{% endif %}" href="{{ url_for('files') }}">View Images</a>
         </li>
       </ul>
     </div>

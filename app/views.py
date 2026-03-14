@@ -1,6 +1,6 @@
 import os
 from app import app, db, login_manager
-from flask import render_template, request, redirect, url_for, flash, session, abort
+from flask import render_template, request, redirect, url_for, flash, session, abort, send_from_directory
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash
@@ -21,7 +21,7 @@ def home():
 @app.route('/about/')
 def about():
     """Render the website's about page."""
-    return render_template('about.html', name="Mary Jane")
+    return render_template('about.html', name="Hector Riettie")
 
 
 @app.route('/upload', methods=['POST', 'GET'])
@@ -119,3 +119,33 @@ def add_header(response):
 def page_not_found(error):
     """Custom 404 page."""
     return render_template('404.html'), 404
+
+
+def get_uploaded_images():
+    rootdir = os.getcwd()
+    upload_dir = os.path.join(rootdir, app.config['UPLOAD_FOLDER'])
+    uploaded_images = []
+    
+    for subdir, dirs, files in os.walk(upload_dir):
+        for file in files:
+            uploaded_images.append(file)
+            
+    return uploaded_images
+
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    rootdir = os.getcwd()
+    return send_from_directory(os.path.join(rootdir, app.config['UPLOAD_FOLDER']), filename)
+
+@app.route('/files')
+@login_required
+def files():
+    images = get_uploaded_images()
+    return render_template('files.html', images=images)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have successfully logged out.', 'success')
+    return redirect(url_for('home'))
